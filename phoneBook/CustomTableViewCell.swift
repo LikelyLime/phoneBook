@@ -15,13 +15,11 @@ class CustomTableViewCell: UITableViewCell{
     private let nameLabel: UILabel = {
         let label = UILabel()
         label.text = "name"
-        label.backgroundColor = .gray
         return label
     }()
     private let numberLabel: UILabel = {
         let label = UILabel()
         label.text = "010-0000-0000"
-        label.backgroundColor = .gray
         return label
     }()
     private let customImageView: UIImageView = {
@@ -42,7 +40,7 @@ class CustomTableViewCell: UITableViewCell{
         
         // Setup constraints using Auto Layout (SnapKit 예제 사용)
         nameLabel.snp.makeConstraints {
-            $0.leading.equalTo(customImageView.snp.trailing).offset(50)
+            $0.leading.equalTo(customImageView.snp.trailing).offset(30)
             $0.centerY.equalToSuperview()
         }
         

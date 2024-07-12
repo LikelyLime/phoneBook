@@ -16,6 +16,7 @@
 		4F00751B2C40B9FF00A6A482 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4F00751A2C40B9FF00A6A482 /* SnapKit */; };
 		4F00751E2C40BACF00A6A482 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 4F00751D2C40BACF00A6A482 /* Alamofire */; };
 		4F0075202C40C29B00A6A482 /* CustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F00751F2C40C29B00A6A482 /* CustomTableViewCell.swift */; };
+		4F0075222C40EF8800A6A482 /* PhoneBookViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0075212C40EF8800A6A482 /* PhoneBookViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		4F0075112C40B74900A6A482 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4F0075132C40B74900A6A482 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4F00751F2C40C29B00A6A482 /* CustomTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableViewCell.swift; sourceTree = "<group>"; };
+		4F0075212C40EF8800A6A482 /* PhoneBookViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneBookViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +72,7 @@
 				4F0075132C40B74900A6A482 /* Info.plist */,
 				4F00750B2C40B74700A6A482 /* phoneBook.xcdatamodeld */,
 				4F00751F2C40C29B00A6A482 /* CustomTableViewCell.swift */,
+				4F0075212C40EF8800A6A482 /* PhoneBookViewController.swift */,
 			);
 			path = phoneBook;
 			sourceTree = "<group>";
@@ -152,6 +155,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F0075222C40EF8800A6A482 /* PhoneBookViewController.swift in Sources */,
 				4F0075072C40B74700A6A482 /* ViewController.swift in Sources */,
 				4F0075032C40B74700A6A482 /* AppDelegate.swift in Sources */,
 				4F0075052C40B74700A6A482 /* SceneDelegate.swift in Sources */,

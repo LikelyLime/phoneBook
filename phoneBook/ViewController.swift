@@ -36,6 +36,7 @@ class ViewController: UIViewController {
         configureUI()
     }
     private func configureUI(){
+        button.addTarget(self, action: #selector(didButtonTapped), for: .touchDown)
         [button, label, tableView].forEach{ view.addSubview($0) }
         button.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide)
@@ -55,7 +56,11 @@ class ViewController: UIViewController {
             $0.bottom.equalToSuperview().offset(-10)
         }
     }
-
+    
+    @objc func didButtonTapped(){
+        let phoneBookViewController = PhoneBookViewController()
+        navigationController?.pushViewController(phoneBookViewController, animated: true)
+    }
 
 }
 

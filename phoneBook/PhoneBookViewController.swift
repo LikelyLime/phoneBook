@@ -8,8 +8,13 @@
 import Foundation
 import UIKit
 import SnapKit
+import Alamofire
+import CoreData
+
 class PhoneBookViewController: UIViewController{
     
+    var urlData = ""
+    var container: NSPersistentContainer!
     private let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.layer.cornerRadius = 100
@@ -22,6 +27,7 @@ class PhoneBookViewController: UIViewController{
        let button = UIButton()
         button.setTitle("랜덤 이미지 생성", for: .normal)
         button.setTitleColor(.black, for: .normal)
+        button.addTarget(self, action: #selector(createImage), for: .touchDown)
         return button
     }()
     
@@ -52,6 +58,8 @@ class PhoneBookViewController: UIViewController{
         super.viewDidLoad()
         view.backgroundColor = .white
         configureUI()
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        self.container = appDelegate.persistentContainer
     }
     
     private func configureUI(){
@@ -88,6 +96,86 @@ class PhoneBookViewController: UIViewController{
         }
     }
     @objc func buttonTap(){
-        print("Tap")
+        print(urlData)
+        validData()
+        createData()
+        returnPage()
+    }
+    
+    public func createData(){
+        guard let entity = NSEntityDescription.entity(forEntityName: PhoneBook.className, in: self.container.viewContext) else { return }
+        let newPhoneBook = NSManagedObject(entity: entity, insertInto: self.container.viewContext)
+        newPhoneBook.setValue(nameTextView.text, forKey: "name")
+        newPhoneBook.setValue(numberTextView.text, forKey: "number")
+        print("urlData : \(urlData)")
+        if let imageUrl = URL(string: urlData) {
+            newPhoneBook.setValue(imageUrl as NSURL, forKey: "imageUrl")
+        }
+        do{
+            try self.container.viewContext.save()
+        }catch{
+            print("저장 실패")
+        }
+    }
+    
+    private func returnPage(){
+        navigationController?.popViewController(animated: true)
+    }
+    
+    private func validData(){
+        if nameTextView.text.isEmpty{
+            showAlert(content: "이름")
+            return
+        }
+        if urlData.isEmpty{
+            showAlert(content: "이미지")
+            return
+        }
+        if numberTextView.text.isEmpty{
+            showAlert(content: "전화번호")
+            return
+        }
+    }
+    
+    
+    private func showAlert(content: String){
+        let alert = UIAlertController(title: "확인", message: "\(content)란(이)가 비어있습니다.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    @objc func createImage(){
+        let randomNum = Int.random(in: 1...1000)
+        let urlComponents = URLComponents(string: "https://pokeapi.co/api/v2/pokemon/\(randomNum)")
+        guard let url = urlComponents?.url else {
+            print("잘못된 URL 입니다.")
+            return
+        }
+        fetchDataByAlamofire(url: url){ [weak self] (result: Result<NewImageResponse, AFError>) in
+            switch result {
+                case .success(let result):
+                    guard let imageUrl = URL(string: result.sprites.frontDefault)else{
+                        return
+                    }
+                    self!.urlData = String(result.sprites.frontDefault)
+                    AF.request(imageUrl).responseData { response in
+                        if let data = response.data, let image = UIImage(data: data){
+                            DispatchQueue.main.async {
+                                
+                                self?.imageView.image = image
+                            }
+                        }
+                    }
+                case .failure(let error):
+                    print("데이터 로드 실패: \(error)")
+                    
+            }
+        }
+    }
+    
+    private func fetchDataByAlamofire<T: Decodable>(url: URL, completion: @escaping (Result<T, AFError>) -> Void) {
+        AF.request(url).responseDecodable(of: T.self) { response in
+            completion(response.result)
+        }
     }
 }

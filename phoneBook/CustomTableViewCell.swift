@@ -12,17 +12,17 @@ class CustomTableViewCell: UITableViewCell{
     
     static let id = "CustomTableViewCell"
     
-    private let nameLabel: UILabel = {
+    let nameLabel: UILabel = {
         let label = UILabel()
         label.text = "name"
         return label
     }()
-    private let numberLabel: UILabel = {
+    let numberLabel: UILabel = {
         let label = UILabel()
         label.text = "010-0000-0000"
         return label
     }()
-    private let customImageView: UIImageView = {
+    let customImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.layer.cornerRadius = 25

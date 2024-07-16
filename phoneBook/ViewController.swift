@@ -12,6 +12,7 @@ import Alamofire
 class ViewController: UIViewController {
     var container: NSPersistentContainer!
     var phoneBookData: [PhoneBookModel] = []
+    
     private let button: UIButton = {
         let button = UIButton()
         button.setTitle("추가", for: .normal)
@@ -89,6 +90,7 @@ class ViewController: UIViewController {
     
     @objc func didButtonTapped(){
         let phoneBookViewController = PhoneBookViewController()
+        phoneBookViewController.isCell = false
         navigationController?.pushViewController(phoneBookViewController, animated: true)
     }
 
@@ -115,5 +117,11 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         80
     }
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let model = phoneBookData[indexPath.row]
+        let phoneBookViewController = PhoneBookViewController()
+        phoneBookViewController.phoneBookModel = model
+        phoneBookViewController.isCell = true
+        navigationController?.pushViewController(phoneBookViewController, animated: true)
+    }
 }

@@ -17,58 +17,15 @@ class PhoneBookViewController: UIViewController{
     var container: NSPersistentContainer!
     var isCell = false
     var isReturn = false
-    private let imageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.layer.cornerRadius = 100
-        imageView.layer.borderWidth = 2.0
-        imageView.layer.borderColor = UIColor.lightGray.cgColor
-        return imageView
-    }()
-    
-    private let createImageButton: UIButton = {
-       let button = UIButton()
-        button.setTitle("랜덤 이미지 생성", for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        button.addTarget(self, action: #selector(createImage), for: .touchDown)
-        return button
-    }()
-    private let deleteButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("삭제", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .blue
-        button.layer.cornerRadius = 8
-        button.addTarget(self, action: #selector(deleteData), for: .touchDown)
-        return button
-    }()
-    
-    private let nameTextView: UITextView = {
-        let textView = UITextView()
-        textView.textAlignment = .left
-        textView.font = UIFont.systemFont(ofSize: 16.0)
-        textView.text = ""
-        textView.textColor = .black
-        textView.layer.cornerRadius = 8
-        textView.layer.borderWidth = 2.0
-        textView.layer.borderColor = UIColor.systemMint.cgColor
-        return textView
-    }()
-    private let numberTextView: UITextView = {
-        let textView = UITextView()
-        textView.textAlignment = .left
-        textView.font = UIFont.systemFont(ofSize: 16.0)
-        textView.text = ""
-        textView.textColor = .black
-        textView.layer.cornerRadius = 8
-        textView.layer.borderWidth = 2.0
-        textView.layer.borderColor = UIColor.systemMint.cgColor
-        return textView
-    }()
+    var phoneBookView: PhoneBookView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        configureUI()
+        phoneBookView = PhoneBookView(frame: self.view.frame)
+        self.view = phoneBookView
+        setNavi()
+        setAction()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         self.container = appDelegate.persistentContainer
         if let model = phoneBookModel{
@@ -76,71 +33,44 @@ class PhoneBookViewController: UIViewController{
         }
         
     }
-    
+    private func setAction(){
+        phoneBookView.createImageButton.addTarget(self, action: #selector(createImage), for: .touchDown)
+        phoneBookView.deleteButton.addTarget(self, action: #selector(deleteData), for: .touchDown)
+    }
+    private func setNavi(){
+        let button = UIBarButtonItem(title: "적용", style: .plain, target: self, action: #selector(buttonTap))
+        navigationItem.title = "연락처 추가"
+        navigationItem.largeTitleDisplayMode = .always
+        navigationItem.rightBarButtonItems = [button]
+    }
     
     /// ㅡmodel이 있는 경우 UI 추가 구성
     /// - Parameter model: PhoneBookModel
     private func notEmptyModel(model: PhoneBookModel){
         
-        nameTextView.text = model.name
-        numberTextView.text = model.number
+        phoneBookView.nameTextView.text = model.name
+        phoneBookView.numberTextView.text = model.number
         AF.request(model.imageUrl).responseData { response in
             if let data = response.data, let image = UIImage(data: data){
                 DispatchQueue.main.async {
                     
-                    self.imageView.image = image
+                    self.phoneBookView.imageView.image = image
                 }
             }
         }
         navigationItem.title = model.name
         navigationItem.largeTitleDisplayMode = .always
         
-        [deleteButton].forEach { view.addSubview($0) }
+        [phoneBookView.deleteButton].forEach { view.addSubview($0) }
         
-        deleteButton.snp.makeConstraints {
+        phoneBookView.deleteButton.snp.makeConstraints {
             $0.height.equalTo(40)
             $0.leading.equalToSuperview().offset(20)
             $0.bottom.equalTo(view.safeAreaLayoutGuide)
             $0.trailing.equalToSuperview().offset(-20)
         }
     }
-    
-    
-    
-    /// 기본 UI 구성
-    private func configureUI(){
-        let button = UIBarButtonItem(title: "적용", style: .plain, target: self, action: #selector(buttonTap))
-        navigationItem.title = "연락처 추가"
-        navigationItem.largeTitleDisplayMode = .always
-        navigationItem.rightBarButtonItems = [button]
-        [imageView, createImageButton, nameTextView, numberTextView].forEach {
-            view.addSubview($0)
-        }
-        imageView.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(50)
-            $0.width.equalTo(200)
-            $0.height.equalTo(200)
-        }
-        createImageButton.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.top.equalTo(imageView.snp.bottom).offset(10)
-            $0.width.equalTo(createImageButton.titleLabel!.intrinsicContentSize.width + 20)
-            $0.height.equalTo(50)
-        }
-        nameTextView.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(20)
-            $0.trailing.equalToSuperview().offset(-20)
-            $0.top.equalTo(createImageButton.snp.bottom).offset(30)
-            $0.height.equalTo(40)
-        }
-        numberTextView.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(20)
-            $0.trailing.equalToSuperview().offset(-20)
-            $0.top.equalTo(nameTextView.snp.bottom).offset(10)
-            $0.height.equalTo(40)
-        }
-    }
+
     
     /// 적용버튼 클릭시 이벤트
     @objc func buttonTap(){
@@ -179,8 +109,8 @@ class PhoneBookViewController: UIViewController{
             do{
                 let result = try self.container.viewContext.fetch(fetchRequest)
                 for data in result as [NSManagedObject]{
-                    data.setValue(nameTextView.text, forKey: PhoneBook.Key.name)
-                    data.setValue(numberTextView.text, forKey: PhoneBook.Key.number)
+                    data.setValue(phoneBookView.nameTextView.text, forKey: PhoneBook.Key.name)
+                    data.setValue(phoneBookView.numberTextView.text, forKey: PhoneBook.Key.number)
                     if let imageUrl = URL(string: urlData) {
                         data.setValue(imageUrl as NSURL, forKey: PhoneBook.Key.imageUrl)
                     }
@@ -197,8 +127,8 @@ class PhoneBookViewController: UIViewController{
     public func createData(){
         guard let entity = NSEntityDescription.entity(forEntityName: PhoneBook.className, in: self.container.viewContext) else { return }
         let newPhoneBook = NSManagedObject(entity: entity, insertInto: self.container.viewContext)
-        newPhoneBook.setValue(nameTextView.text, forKey: PhoneBook.Key.name)
-        newPhoneBook.setValue(numberTextView.text, forKey: PhoneBook.Key.number)
+        newPhoneBook.setValue(phoneBookView.nameTextView.text, forKey: PhoneBook.Key.name)
+        newPhoneBook.setValue(phoneBookView.numberTextView.text, forKey: PhoneBook.Key.number)
         if let imageUrl = URL(string: urlData) {
             newPhoneBook.setValue(imageUrl as NSURL, forKey: PhoneBook.Key.imageUrl)
         }
@@ -216,17 +146,17 @@ class PhoneBookViewController: UIViewController{
     
     /// 유효성 검사하는 메서드
     private func validData(){
-        if nameTextView.text.isEmpty{
+        if phoneBookView.nameTextView.text.isEmpty{
             isReturn = false
             showAlert(content: "이름 란(이)가 비어있습니다.")
             return
         }
-        if urlData.isEmpty{
+        if urlData.isEmpty && ((phoneBookModel?.imageUrl.isEmpty) == nil){
             isReturn = false
             showAlert(content: "이미지 란(이)가 비어있습니다.")
             return
         }
-        if numberTextView.text.isEmpty{
+        if phoneBookView.numberTextView.text.isEmpty{
             isReturn = false
             showAlert(content: "전화번호 란(이)가 비어있습니다.")
             return
@@ -249,7 +179,7 @@ class PhoneBookViewController: UIViewController{
         returnPage()
     }
     
-    /// 이미지 핸덤으로 생성하는 메서드
+    /// 이미지 랜덤으로 생성하는 메서드
     @objc func createImage(){
         let randomNum = Int.random(in: 1...1000)
         let urlComponents = URLComponents(string: "https://pokeapi.co/api/v2/pokemon/\(randomNum)")
@@ -268,7 +198,7 @@ class PhoneBookViewController: UIViewController{
                         if let data = response.data, let image = UIImage(data: data){
                             DispatchQueue.main.async {
                                 
-                                self?.imageView.image = image
+                                self?.phoneBookView.imageView.image = image
                             }
                         }
                     }

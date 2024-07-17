@@ -15,6 +15,7 @@ class PhoneBookView: UIView{
         imageView.layer.cornerRadius = 100
         imageView.layer.borderWidth = 2.0
         imageView.layer.borderColor = UIColor.lightGray.cgColor
+        imageView.layer.masksToBounds = true
         return imageView
     }()
     

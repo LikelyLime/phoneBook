@@ -28,6 +28,7 @@ class CustomTableViewCell: UITableViewCell{
         imageView.layer.cornerRadius = 25
         imageView.layer.borderColor = UIColor.lightGray.cgColor
         imageView.layer.borderWidth = 2.0
+        imageView.layer.masksToBounds = true
         return imageView
     }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

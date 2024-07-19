@@ -34,12 +34,9 @@ class CustomTableViewCell: UITableViewCell{
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        // Add subviews and setup constraints
         contentView.addSubview(nameLabel)
         contentView.addSubview(numberLabel)
         contentView.addSubview(customImageView)
-        
-        // Setup constraints using Auto Layout (SnapKit 예제 사용)
         nameLabel.snp.makeConstraints {
             $0.leading.equalTo(customImageView.snp.trailing).offset(30)
             $0.centerY.equalToSuperview()
